@@ -13,6 +13,59 @@ var labyrinth = [
 
 const PATHFINDER = window.PATHFINDER || {};
 
+PATHFINDER.labyrinths = [];
+
+PATHFINDER.export = (labyrinth) => {
+	labyrinth = PATHFINDER.export_conversion(labyrinth);
+	let blob = new Blob([labyrinth], {type: "text/plain"});
+	let a = document.createElement("a");
+	a.download = "labyrinth.lbrth";
+	a.href = URL.createObjectURL(blob);
+	a.dataset.downloadurl = ["text/plain", a.download, a.href].join(":");
+	a.style.display = "none";
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+	setTimeout(() => {URL.revokeObjectURL(a.href);}, 1500);
+}
+
+PATHFINDER.import = (input, callback = (labyrinth) => {}) => {
+	input.addEventListener("change", (evt) => {
+		let file = input.files[0];
+		let reader = new FileReader();
+		reader.addEventListener("load", (evt) => {
+			let labyrinth = PATHFINDER.import_conversion(evt.target.result);
+			PATHFINDER.labyrinths.push(labyrinth);
+			callback(labyrinth);
+		});
+		reader.readAsText(file);
+	});
+}
+
+PATHFINDER.import_conversion = (labyrinth) => {
+	labyrinth.replace(labyrinth[2], "S");
+	labyrinth.replace(labyrinth[4], "E");
+	labyrinth.replace(labyrinth[6], " ");
+	labyrinth.replace(labyrinth[8], "#");
+	labyrinth = labyrinth.split("\n");
+	labyrinth.shift();
+	for (let row in labyrinth) {
+		labyrinth[row] = Array.from(labyrinth[row]);
+	}
+	return labyrinth;
+}
+
+PATHFINDER.export_conversion = (labyrinth) => {
+	let exported = "[SSEEP W#]";
+	for (let row of labyrinth) {
+		exported += "\n";
+		for (let element of row) {
+			exported += element;
+		}
+	}
+	return exported;
+}
+
 PATHFINDER._get_cross = (center, labyrinth) => {
 	var cross = [["#", "#", "#"],
 				 ["#", "#", "#"],
