@@ -1,17 +1,19 @@
 import sys
 if len(sys.argv) > 1:
 	file = open(sys.argv[1], "r").read()
+	config = {"S": file[2], "E": file[4], "P": file[6], "W": file[8]}
+	file = file[11:]
 	width = file.index("\n")
 	height = int((len(file)+1)/(width+1))
 	labyrinth = file.split("\n")
 	
 	for row in range(height):
 		if "S" in labyrinth[row]:
-			start = (row, labyrinth[row].index("S"))
+			start = (row, labyrinth[row].index(config["S"]))
 			break
 
 	def get_cross(center):
-		cross = [["#" for row in range(3)] for column in range(3)]
+		cross = [[config["W"] for row in range(3)] for column in range(3)]
 		if len(center) == 2:
 			if center[0] > 0:
 				cross[0][1] = labyrinth[center[0]-1][center[1]]
@@ -33,13 +35,13 @@ if len(sys.argv) > 1:
 			cross = get_cross(position)
 			possibilities = 0
 
-			if cross[0][1] == "0" or cross[0][1] == "E":
+			if cross[0][1] == config["P"] or cross[0][1] == config["E"]:
 				direction = (position[0]-1, position[1])
 				if not direction in path:
 					path.append(direction)
 					possibilities += 1
 
-			if cross[2][1] == "0" or cross[2][1] == "E":
+			if cross[2][1] == config["P"] or cross[2][1] == config["E"]:
 				direction = (position[0]+1, position[1])
 				if not direction in path:
 					if possibilities > 0:
@@ -50,7 +52,7 @@ if len(sys.argv) > 1:
 						path.append(direction)
 						possibilities += 1
 
-			if cross[1][0] == "0" or cross[1][0] == "E":
+			if cross[1][0] == config["P"] or cross[1][0] == config["E"]:
 				direction = (position[0], position[1]-1)
 				if not direction in path:
 					if possibilities > 0:
@@ -61,7 +63,7 @@ if len(sys.argv) > 1:
 						path.append(direction)
 						possibilities += 1
 
-			if cross[1][2] == "0" or cross[1][2] == "E":
+			if cross[1][2] == config["P"] or cross[1][2] == config["E"]:
 				direction = (position[0], position[1]+1)
 				if not direction in path:
 					if possibilities > 0:
@@ -73,7 +75,7 @@ if len(sys.argv) > 1:
 						possibilities += 1
 
 			if possibilities == 0 and len(position) == 2:
-				if len(position) == 2 and labyrinth[position[0]][position[1]] == "E":
+				if len(position) == 2 and labyrinth[position[0]][position[1]] == config["E"]:
 					path.append("end")
 				else:
 					path.append("blocked")
