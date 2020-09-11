@@ -1,116 +1,120 @@
+def convert_labyrinth(labyrinth, configuration):
+	for column in range(len(labyrinth)):
+		for row in range(len(labyrinth[column])):
+			if labyrinth[column][row] == configuration["path"]:
+				labyrinth[column][row] = 0
+			elif labyrinth[column][row] == configuration["wall"]:
+				labyrinth[column][row] = 1
+			elif labyrinth[column][row] == configuration["start"]:
+				labyrinth[column][row] = 2
+			elif labyrinth[column][row] == configuration["end"]:
+				labyrinth[column][row] = 3
+	return labyrinth
+
+def find_start(labyrinth):
+	for column in range(len(labyrinth)):
+		for row in range(len(labyrinth[column])):
+			if labyrinth[column][row] == 2:
+				return (column, row)
+	return False
+
+def get_cross(labyrinth, center):
+	cross = [[1 for h in range(3)] for w in range(3)]
+	if center[0] > 0 and center[0] < len(labyrinth) and center[1] >=  0 and center[1] < len(labyrinth[center[0]]):
+		cross[0][1] = labyrinth[center[0]-1][center[1]]
+	if center[0] >= 0 and center[0] < len(labyrinth)-1 and center[1] >=  0 and center[1] < len(labyrinth[center[0]]):
+		cross[2][1] = labyrinth[center[0]+1][center[1]]
+	if center[0] >= 0 and center[0] < len(labyrinth) and center[1] >  0 and center[1] < len(labyrinth[center[0]]):
+		cross[1][0] = labyrinth[center[0]][center[1]-1]
+	if center[0] >= 0 and center[0] < len(labyrinth) and center[1] >=  0 and center[1] < len(labyrinth[center[0]])-1:
+		cross[1][2] = labyrinth[center[0]][center[1]+1]
+	return cross
+
+def get_possibilities(labyrinth, position):
+	directions = []
+	cases = []
+	cross = get_cross(labyrinth, position)
+	for column in range(3):
+		for row in range(3):
+			if  cross[column][row] in [0, 3]:
+				directions.append((column-1+position[0], row-1+position[1]))
+				cases.append(cross[column][row])
+	return directions, cases
+
+def labyrinth_to_string(labyrinth):
+	string = ""
+	for column in labyrinth:
+		if string != "":
+			string += "\n"
+		for case in column:
+			if case == 0:
+				string += " "
+			elif case == 1:
+				string += "#"
+			elif case == 2:
+				string += "S"
+			elif case == 3:
+				string += "E"
+			elif case == 4:
+				string += "."
+	return string
+
+def calculate_paths(labyrinth, paths):
+	new_paths = []
+	for path in paths:
+		directions, cases = get_possibilities(labyrinth, path[-1])
+		if 3 in cases:
+			new_paths = path.copy()
+			new_paths.append(directions[cases.index(3)])
+			return new_paths, True
+		else:
+			for direction in directions:
+				if not (direction in path):
+					new_paths.append(path.copy())
+					new_paths[-1].append(direction)
+	return new_paths, False
+
+def resolve(labyrinth):
+	paths = [[find_start(labyrinth)]]
+	end = False
+	while not end:
+		paths, end = calculate_paths(labyrinth, paths)
+		if len(paths) == 0:
+			end = True
+	return paths
+
+def limit(labyrinth, width, height):
+	new_labyrinth = []
+	for column in range(width):
+		new_labyrinth.append([])
+		for row in range(height):
+			new_labyrinth[column].append(labyrinth[column][row])
+	return new_labyrinth
+
 import sys
 if len(sys.argv) > 1:
 	file = open(sys.argv[1], "r").read()
-	config = {"S": file[2], "E": file[4], "P": file[6], "W": file[8]}
+	configuration = {"start": file[2], "end": file[4], "path": file[6], "wall": file[8]}
 	file = file[11:]
 	width = file.index("\n")
 	height = int((len(file)+1)/(width+1))
 	labyrinth = file.split("\n")
-	
-	for row in range(height):
-		if "S" in labyrinth[row]:
-			start = (row, labyrinth[row].index(config["S"]))
-			break
+	for column in range(len(labyrinth)):
+		labyrinth[column] = list(labyrinth[column])
+	convert_labyrinth(labyrinth, configuration)
+	labyrinth = limit(labyrinth, width, height)
+	solution = resolve(labyrinth)
 
-	def get_cross(center):
-		cross = [[config["W"] for row in range(3)] for column in range(3)]
-		if len(center) == 2:
-			if center[0] > 0:
-				cross[0][1] = labyrinth[center[0]-1][center[1]]
-			if center[0] < height-1:
-				cross[2][1] = labyrinth[center[0]+1][center[1]]
-			if center[1] > 0:
-				cross[1][0] = labyrinth[center[0]][center[1]-1]
-			if center[1] < width-1:
-				cross[1][2] = labyrinth[center[0]][center[1]+1]
+	if len(solution) > 0:
+		if "-show" in sys.argv:
+			for step in range(1, len(solution)-1):
+				labyrinth[solution[step][0]][solution[step][1]] = 4
+			print(labyrinth_to_string(labyrinth))
+		else:
+			print(solution)
+		print("steps : ", len(solution)-1, ".", sep="")
 
-		return cross
-
-	paths = [["start", start]]
-	blocked = False
-
-	while not blocked:
-		for path in paths:
-			position = path[-1]
-			cross = get_cross(position)
-			possibilities = 0
-
-			if cross[0][1] == config["P"] or cross[0][1] == config["E"]:
-				direction = (position[0]-1, position[1])
-				if not direction in path:
-					path.append(direction)
-					possibilities += 1
-
-			if cross[2][1] == config["P"] or cross[2][1] == config["E"]:
-				direction = (position[0]+1, position[1])
-				if not direction in path:
-					if possibilities > 0:
-						paths.append(path.copy())
-						paths[-1][-1] = direction
-						possibilities += 1
-					else:
-						path.append(direction)
-						possibilities += 1
-
-			if cross[1][0] == config["P"] or cross[1][0] == config["E"]:
-				direction = (position[0], position[1]-1)
-				if not direction in path:
-					if possibilities > 0:
-						paths.append(path.copy())
-						paths[-1][-1] = direction
-						possibilities += 1
-					else:
-						path.append(direction)
-						possibilities += 1
-
-			if cross[1][2] == config["P"] or cross[1][2] == config["E"]:
-				direction = (position[0], position[1]+1)
-				if not direction in path:
-					if possibilities > 0:
-						paths.append(path.copy())
-						paths[-1][-1] = direction
-						possibilities += 1
-					else:
-						path.append(direction)
-						possibilities += 1
-
-			if possibilities == 0 and len(position) == 2:
-				if len(position) == 2 and labyrinth[position[0]][position[1]] == config["E"]:
-					path.append("end")
-				else:
-					path.append("blocked")
-
-		blocked = True
-		for path in paths:
-			if len(path[-1]) == 2:
-				blocked = False
-				break
-
-	solutions = []
-	best_solution = False
-	for path in paths:
-		if path[-1] == "end":
-			solutions.append(path)
-			if not best_solution:
-				best_solution = path
-			elif len(best_solution) > len(path):
-				best_solution = path
-
-	if (len(solutions) > 0):
-		best_solution_string = ""
-		for step in best_solution:
-			if len(step) == 2:
-				best_solution_string += "("+str(step[0])+", "+str(step[1])+") => "
-			elif step == "start":
-				best_solution_string += "(start) => "
-			elif step == "end":
-				best_solution_string += "(end)"
-
-		print("Solutions: ", len(solutions), ".", sep="")
-		print("Best solution steps: ", len(best_solution)-3, ".", sep="")
-		print("Best solution:", best_solution_string)
 	else:
 		print("No solution.")
-
 else:
 	print("Usage: pathfinder.py [file]")
