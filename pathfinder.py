@@ -92,7 +92,7 @@ def limit(labyrinth, width, height):
 	return new_labyrinth
 
 import sys
-if len(sys.argv) > 1:
+if len(sys.argv) > 1 and sys.argv[0] == "pathfinder.py":
 	file = open(sys.argv[1], "r").read()
 	configuration = {"start": file[2], "end": file[4], "path": file[6], "wall": file[8]}
 	file = file[11:]
@@ -112,9 +112,9 @@ if len(sys.argv) > 1:
 			print(labyrinth_to_string(labyrinth))
 		else:
 			print(solution)
-		print("steps : ", len(solution)-1, ".", sep="")
+		print("Steps : ", len(solution)-1, ".", sep="")
 
 	else:
 		print("No solution.")
-else:
+elif sys.argv[0] == "pathfinder.py":
 	print("Usage: pathfinder.py [file]")
