@@ -1,6 +1,10 @@
 # Pathfinder
 A simple path finding algorithm.
 
+### Test yourself
+
+You can access the application by clicking [here](https://mattesthaut.github.io/pathfinder)!
+
 ### Python documentation
 
 The labyrinth must be a two-dimensional array with distinct values for: paths, walls, departure and arrival. It will have to be converted into a labyrinth usable by **pathfinder.py** as follows :
