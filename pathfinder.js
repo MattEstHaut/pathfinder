@@ -1,19 +1,102 @@
-var labyrinth = [
-	["#", "S", "#", "#", "#", "#", "#", "#", "#", "#"],
-	["#", " ", "#", "#", "#", "#", "#", "#", "#", "#"],
-	["#", " ", " ", " ", " ", " ", " ", "#", "#", "#"],
-	["#", "#", "#", "#", " ", "#", " ", "#", "#", "#"],
-	["#", "#", "#", "#", " ", "#", "#", "#", "#", "#"],
-	["#", "#", "#", "#", " ", "#", "#", "#", "#", "#"],
-	["#", "#", "#", "#", " ", " ", "#", "#", "#", "#"],
-	["#", "#", "#", "#", "#", " ", " ", " ", "E", "#"],
-	["#", "#", "#", " ", " ", " ", "#", "#", "#", "#"],
-	["#", "#", "#", "#", "#", "#", "#", "#", "#", "#"]
-];
-
 const PATHFINDER = window.PATHFINDER || {};
 
 PATHFINDER.labyrinths = [];
+
+PATHFINDER.convert_labyrinth = (labyrinth, configuration) => {
+	for (let column in labyrinth) {
+		for (let row in labyrinth[column]) {
+			if (labyrinth[column][row] == configuration.path)
+				labyrinth[column][row] = 0;
+			if (labyrinth[column][row] == configuration.wall)
+				labyrinth[column][row] = 1;
+			if (labyrinth[column][row] == configuration.start)
+				labyrinth[column][row] = 2;
+			if (labyrinth[column][row] == configuration.end)
+				labyrinth[column][row] = 3;
+		}
+	}
+	return labyrinth;
+}
+
+PATHFINDER.find_start = (labyrinth) => {
+	for (let column in labyrinth) {
+		for (let row in labyrinth[column]) {
+			if (labyrinth[column][row] == 2)
+				return [parseInt(column), parseInt(row)];
+		}
+	}
+	return false;
+}
+
+PATHFINDER.get_cross = (labyrinth, center) => {
+	let cross = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
+	if (center[0] > 0 && center[0] < labyrinth.length && center[1] >= 0 && center[1] < labyrinth[center[0]].length)
+		cross[0][1] = labyrinth[center[0]-1][center[1]]
+	if (center[0] >= 0 && center[0] < labyrinth.length-1 && center[1] >= 0 && center[1] < labyrinth[center[0]].length)
+		cross[2][1] = labyrinth[center[0]+1][center[1]]
+	if (center[0] >= 0 && center[0] < labyrinth.length && center[1] > 0 && center[1] < labyrinth[center[0]].length)
+		cross[1][0] = labyrinth[center[0]][center[1]-1]
+	if (center[0] >= 0 && center[0] < labyrinth.length && center[1] >= 0 && center[1] < labyrinth[center[0]].length-1)
+		cross[1][2] = labyrinth[center[0]][center[1]+1]
+	return cross
+}
+
+PATHFINDER.get_possibilities = (labyrinth, position) => {
+	let directions = [];
+	let cases = [];
+	let cross = PATHFINDER.get_cross(labyrinth, position);
+	for (let column=0; column<3; column++) {
+		for (let row=0; row<3; row++) {
+			if (cross[column][row] == 0 || cross[column][row] == 3) {
+				directions.push([column-1+position[0], row-1+position[1]]);
+				cases.push(cross[column][row]);
+			}
+		}
+	}
+	return {directions: directions, cases: cases};
+}
+
+PATHFINDER.calculate_paths = (labyrinth, paths) => {
+	new_paths = [];
+	for (let path of paths) {
+		let possibilities = PATHFINDER.get_possibilities(labyrinth, path[path.length-1]);
+		if (possibilities.cases.includes(3)) {
+			new_paths = path.slice();
+			new_paths.push(possibilities.directions[possibilities.cases.indexOf(3)]);
+			return {paths: new_paths, end: true}
+		} else {
+			for (let direction of possibilities.directions) {
+				if (!PATHFINDER.includes(direction, path)) {
+					new_paths.push(path.slice());
+					new_paths[new_paths.length-1].push(direction);
+				}
+			}
+		}
+	}
+	return {paths: new_paths, end: false};
+}
+
+PATHFINDER.resolve = (labyrinth) => {
+	paths = [[PATHFINDER.find_start(labyrinth)]];
+	end = false;
+	while (!end) {
+		let result = PATHFINDER.calculate_paths(labyrinth, paths);
+		paths = result.paths;
+		end = result.end;
+		if (paths.length == 0)
+			end = true;
+	}
+	return paths;
+}
+
+PATHFINDER.includes = (a, b) => {
+	for (let ae=0; ae < a.length; ae++) {
+		if (a[ae][0]==b[0] && a[ae][1]==b[1]) {
+			return true;
+		}
+	}
+	return false;
+}
 
 PATHFINDER.export = (labyrinth) => {
 	labyrinth = PATHFINDER.export_conversion(labyrinth);
@@ -35,7 +118,6 @@ PATHFINDER.import = (input, callback = (labyrinth) => {}) => {
 		let reader = new FileReader();
 		reader.addEventListener("load", (evt) => {
 			let labyrinth = PATHFINDER.import_conversion(evt.target.result);
-			PATHFINDER.labyrinths.push(labyrinth);
 			callback(labyrinth);
 		});
 		reader.readAsText(file);
@@ -43,166 +125,28 @@ PATHFINDER.import = (input, callback = (labyrinth) => {}) => {
 }
 
 PATHFINDER.import_conversion = (labyrinth) => {
-	labyrinth.replace(labyrinth[2], "S");
-	labyrinth.replace(labyrinth[4], "E");
-	labyrinth.replace(labyrinth[6], " ");
-	labyrinth.replace(labyrinth[8], "#");
+	labyrinth.replace(labyrinth[2], "2");
+	labyrinth.replace(labyrinth[4], "3");
+	labyrinth.replace(labyrinth[6], "0");
+	labyrinth.replace(labyrinth[8], "1");
 	labyrinth = labyrinth.split("\n");
 	labyrinth.shift();
-	for (let row in labyrinth) {
-		labyrinth[row] = Array.from(labyrinth[row]);
+	for (let column in labyrinth) {
+		labyrinth[column] = Array.from(labyrinth[column]);
+		for (let row in labyrinth[column]) {
+			labyrinth[column][row] = parseInt(labyrinth[column][row]);
+		}
 	}
 	return labyrinth;
 }
 
 PATHFINDER.export_conversion = (labyrinth) => {
-	let exported = "[SSEEP W#]";
+	let exported = "[S2E3P0W1]";
 	for (let row of labyrinth) {
 		exported += "\n";
 		for (let element of row) {
-			exported += element;
+			exported += element.toString();
 		}
 	}
 	return exported;
-}
-
-PATHFINDER._get_cross = (center, labyrinth) => {
-	var cross = [["#", "#", "#"],
-				 ["#", "#", "#"],
-				 ["#", "#", "#"]];
-	if (center.length == 2) {
-		if (center[0] > 0) {
-			cross[0][1] = labyrinth[center[0]-1][center[1]];
-		}
-		if (center[0] < labyrinth.length-1) {
-			cross[2][1] = labyrinth[center[0]+1][center[1]];
-		}
-		if (center[1] > 0) {
-			cross[1][0] = labyrinth[center[0]][center[1]-1];
-		}
-		if (center[1] < labyrinth[0].length-1) {
-			cross[1][2] = labyrinth[center[0]][center[1]+1];
-		}
-	}
-	return cross;
-}
-
-PATHFINDER._copy = (path) => {
-	let new_path = [];
-	for (let step in path) {
-		new_path.push(path[step]);
-	}
-	return new_path;
-}
-
-PATHFINDER._includes = (a, b) => {
-	for (let ae=0; ae < a.length; ae++) {
-		if (a[ae][0]==b[0] && a[ae][1]==b[1]) {
-			return true;
-		}
-	}
-	return false;
-}
-
-PATHFINDER.resolve = (labyrinth) => {
-	let start = false;
-	for (let row=0; row<labyrinth.length; row++) {
-		for (let column=0; column<labyrinth[0].length; column++) {
-			if (labyrinth[row][column] == "S") {
-				start = [row, column];
-			}
-		}
-	}
-	if (!start)
-		return 1;
-
-	let paths = [["start", start]]
-	let blocked = false;
-
-	while (!blocked) {
-		let n = paths.length;
-		for (let p=0; p < n; p++) {
-			let position = paths[p][paths[p].length-1];
-			let cross = PATHFINDER._get_cross(position, labyrinth);
-			let possibilities = 0;
-
-			if (cross[0][1]==" " || cross[0][1]=="E") {
-				let direction = [position[0]-1, position[1]];
-				if (!PATHFINDER._includes(paths[p], direction)) {
-					paths[p].push(direction);
-					possibilities++;
-				}
-			}
-
-			if (cross[2][1]==" " || cross[2][1]=="E") {
-				let direction = [position[0]+1, position[1]];
-				if (!PATHFINDER._includes(paths[p], direction)) {
-					if (possibilities == 0) {
-						paths[p].push(direction);
-						possibilities++;
-					} else {
-						let copy = PATHFINDER._copy(paths[p]);
-						copy[copy.length-1] = direction;
-						paths.push(copy);
-					}
-				}
-			}
-
-			if (cross[1][0]==" " || cross[1][0]=="E") {
-				let direction = [position[0], position[1]-1];
-				if (!PATHFINDER._includes(paths[p], direction)) {
-					if (possibilities == 0) {
-						paths[p].push(direction);
-						possibilities++;
-					} else {
-						let copy = PATHFINDER._copy(paths[p]);
-						copy[copy.length-1] = direction;
-						paths.push(copy);
-					}
-				}
-			}
-
-			if (cross[1][2]==" " || cross[1][2]=="E") {
-				let direction = [position[0], position[1]+1];
-				if (!PATHFINDER._includes(paths[p], direction)) {
-					if (possibilities == 0) {
-						paths[p].push(direction);
-						possibilities++;
-					} else {
-						let copy = PATHFINDER._copy(paths[p]);
-						copy[copy.length-1] = direction;
-						paths.push(copy);
-					} 
-				}
-			}
-
-			if (possibilities == 0 && position.length == 2) {
-				if (labyrinth[position[0]][position[1]] == "E")
-					paths[p].push("end");
-				else
-					paths[p].push("blocked");
-			}
-		}
-
-		blocked = true;
-		for (let path of paths) {
-			if (path[path.length-1].length == 2)
-				blocked = false
-		}
-	}
-
-	let solutions = [];
-	let shortest = false;
-	for (let path of paths) {
-		if (path[path.length-1] == "end") {
-			solutions.push(path);
-			if (!shortest) {
-				shortest = path;
-			} else if (shortest.length > path.length) {
-				shortest = path;
-			}
-		}
-	}
-
-	return {"paths": paths, "solutions": solutions, "shortest": shortest, "shortest_length": shortest.length-3};
 }
