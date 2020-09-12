@@ -3,7 +3,7 @@ A simple path finding algorithm.
 
 ### Test yourself
 
-You can access the application by clicking [here](https://mattesthaut.github.io/pathfinder)!
+You can access the application by clicking [here](https://mattesthaut.github.io/pathfinder) !
 
 ### Python documentation
 
