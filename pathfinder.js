@@ -1,7 +1,5 @@
 const PATHFINDER = window.PATHFINDER || {};
 
-PATHFINDER.labyrinths = [];
-
 PATHFINDER.convert_labyrinth = (labyrinth, configuration) => {
 	for (let column in labyrinth) {
 		for (let row in labyrinth[column]) {
