@@ -144,8 +144,11 @@ PATHFINDER.import_conversion = (labyrinth) => {
 	labyrinth.replace(labyrinth[8], "1");
 	labyrinth = labyrinth.split("\n");
 	labyrinth.shift();
+	let height = labyrinth[labyrinth.length-1].length;
 	for (let column in labyrinth) {
 		labyrinth[column] = Array.from(labyrinth[column]);
+		if (labyrinth[column].length > height)
+			labyrinth[column].pop();
 		for (let row in labyrinth[column]) {
 			labyrinth[column][row] = parseInt(labyrinth[column][row]);
 		}
