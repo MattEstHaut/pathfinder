@@ -70,8 +70,16 @@ def calculate_paths(labyrinth, paths):
 		else:
 			for direction in directions:
 				if not (direction in path):
-					new_paths.append(path.copy())
-					new_paths[-1].append(direction)
+					free = True
+					for path2 in paths:
+						if direction in path2:
+							free = False
+					for path2 in new_paths:
+						if direction in path2:
+							free = False
+					if free:
+						new_paths.append(path.copy())
+						new_paths[-1].append(direction)
 	return new_paths, False
 
 def resolve(labyrinth):
