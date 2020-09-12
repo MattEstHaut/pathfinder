@@ -7,6 +7,12 @@ You can access the application by clicking [here](https://mattesthaut.github.io/
 
 ### Python documentation
 
+First, import the package :
+
+```python
+import pathfinder.py
+```
+
 The labyrinth must be a two-dimensional array with distinct values for: paths, walls, departure and arrival. It will have to be converted into a labyrinth usable by **pathfinder.py** as follows :
 
 ```python
@@ -47,6 +53,12 @@ python pathfinder.py [filename] -show
 
 
 ### Javascript documentation
+
+First, import the package :
+
+```html
+<script type="text/javascript" src="pathfinder.js"></script>
+```
 
 The labyrinth must be a two-dimensional array with distinct values for: paths, walls, departure and arrival. It will have to be converted into a labyrinth usable by **pathfinder.js** as follows :
 
