@@ -66,9 +66,24 @@ PATHFINDER.calculate_paths = (labyrinth, paths) => {
 			return {paths: new_paths, end: true}
 		} else {
 			for (let direction of possibilities.directions) {
-				if (!PATHFINDER.includes(direction, path)) {
-					new_paths.push(path.slice());
-					new_paths[new_paths.length-1].push(direction);
+				if (!PATHFINDER.includes(path, direction)) {
+					let free = true;
+					for (let path2 of paths) {
+						if (PATHFINDER.includes(path2, direction)) {
+							free = false;
+							break;
+						}
+					}
+					for (let path2 of new_paths) {
+						if (PATHFINDER.includes(path2, direction)) {
+							free = false;
+							break;
+						}
+					}
+					if (free) {
+						new_paths.push(path.slice());
+						new_paths[new_paths.length-1].push(direction);
+					}	
 				}
 			}
 		}
