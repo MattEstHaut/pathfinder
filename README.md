@@ -20,7 +20,7 @@ configuration = {"path": pathValue, "wall": wallValue, "start": startValue, "end
 labyrinth = pathfinder.convert_labyrinth(labyrinth, configuration)
 ```
 
-Once this is done, you can calculate the shortest route to the finish :
+Once this is done, you can calculate the shortest route to the end :
 
 ```python
 solution = pathfinder.resolve(labyrinth)
@@ -67,7 +67,7 @@ const configuration = {path: pathValue, wall: wallValue, start: startValue, end:
 labyrinth = PATHFINDER.convert_labyrinth(labyrinth, configuration);
 ```
 
-Once this is done, you can calculate the shortest route to the finish :
+Once this is done, you can calculate the shortest route to the end :
 
 ```javascript
 var solution = PATHFINDER.resolve(labyrinth);
