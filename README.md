@@ -28,7 +28,7 @@ solution = pathfinder.resolve(labyrinth)
 
 You will get an array containing an ordered list of the coordinates of the shortest path. If there is no solution, the array will be zero length.
 
-You can also solve a labyrinth contained in a file, labyrinth.lbrth is an example of a labyrinth stored in a :
+You can also solve a labyrinth contained in a file, labyrinth.lbrth is an example of a labyrinth stored in a file :
 
 ```
 [SSEEP W#]
