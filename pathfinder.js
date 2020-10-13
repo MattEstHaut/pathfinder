@@ -1,6 +1,6 @@
 const PATHFINDER = window.PATHFINDER || {};
 
-PATHFINDER.convert_labyrinth = (labyrinth, configuration) => {
+PATHFINDER.convert = (labyrinth, configuration) => {
 	for (let column in labyrinth) {
 		for (let row in labyrinth[column]) {
 			if (labyrinth[column][row] == configuration.path)

@@ -10,14 +10,14 @@ You can access the application by clicking [here](https://mattesthaut.github.io/
 First, import the package :
 
 ```python
-import pathfinder.py
+import pathfinder
 ```
 
 The labyrinth must be a two-dimensional array with distinct values for: paths, walls, departure and arrival. It will have to be converted into a labyrinth usable by **pathfinder.py** as follows :
 
 ```python
-configuration = {"path": pathValue, "wall": wallValue, "start": startValue, "end": endValue}
-labyrinth = pathfinder.convert_labyrinth(labyrinth, configuration)
+configuration = {"S": pathfinder.START, "E": pathfinder.END, " ": pathfinder.PATH, "#": pathfinder.WALL}
+labyrinth = pathfinder.convert(labyrinth, configuration)
 ```
 
 Once this is done, you can calculate the shortest route to the finish :
@@ -48,7 +48,7 @@ The first line means: "The starting point is represented by 'S', the end point i
 To resolve this labyrinth use the following command in a terminal :
 
 ```python
-python pathfinder.py [filename] -show
+python3 pathfinder.py [filename] -show
 ```
 
 
@@ -64,7 +64,7 @@ The labyrinth must be a two-dimensional array with distinct values for: paths, w
 
 ```javascript
 const configuration = {path: pathValue, wall: wallValue, start: startValue, end: endValue};
-labyrinth = PATHFINDER.convert_labyrinth(labyrinth, configuration);
+labyrinth = PATHFINDER.convert(labyrinth, configuration);
 ```
 
 Once this is done, you can calculate the shortest route to the finish :
