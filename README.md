@@ -20,7 +20,7 @@ configuration = {"S": pathfinder.START, "E": pathfinder.END, " ": pathfinder.PAT
 labyrinth = pathfinder.convert(labyrinth, configuration)
 ```
 
-Once this is done, you can calculate the shortest route to the finish :
+Once this is done, you can calculate the shortest route to the end :
 
 ```python
 solution = pathfinder.resolve(labyrinth)
@@ -28,7 +28,7 @@ solution = pathfinder.resolve(labyrinth)
 
 You will get an array containing an ordered list of the coordinates of the shortest path. If there is no solution, the array will be zero length.
 
-You can also solve a labyrinth contained in a file, labyrinth.lbrth is an example of a labyrinth stored in a :
+You can also solve a labyrinth contained in a file, labyrinth.lbrth is an example of a labyrinth stored in a file :
 
 ```
 [SSEEP W#]
@@ -67,7 +67,7 @@ const configuration = {path: pathValue, wall: wallValue, start: startValue, end:
 labyrinth = PATHFINDER.convert(labyrinth, configuration);
 ```
 
-Once this is done, you can calculate the shortest route to the finish :
+Once this is done, you can calculate the shortest route to the end :
 
 ```javascript
 var solution = PATHFINDER.resolve(labyrinth);
