@@ -574,13 +574,14 @@ PATHFINDER.str2narray = (data) => {
  * -------------
  * Save narray and laws in a file.
  * @param {Array}  narray N-dimensional array.
+ * @param {String} name   The name of file.
  * @param {Object} laws   Laws.
  */
-PATHFINDER.export = (narray, laws={}) => {
+PATHFINDER.export = (narray, name, laws={}) => {
     stringifiedNArray = PATHFINDER.narray2str(narray, laws);
     let blob = new Blob([stringifiedNArray], {type: "text/plain"});
     let a = document.createElement("a");
-	a.download = "labyrinth.lbrth";
+	a.download = name;
 	a.href = URL.createObjectURL(blob);
 	a.dataset.downloadurl = ["text/plain", a.download, a.href].join(":");
 	a.style.display = "none";
