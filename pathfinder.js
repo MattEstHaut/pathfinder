@@ -72,7 +72,7 @@ PATHFINDER.findStart = (labyrinth, d=0, n=0, c=[]) => {
 
     for (let i=0; i<labyrinth.length; i++) {
         let j = PATHFINDER.findStart(labyrinth[i], d, n+1, c.concat([i]));
-        if (j != -1) {
+        if (j.length > 0) {
             return j;
         }
     }
@@ -91,7 +91,8 @@ PATHFINDER.findStart = (labyrinth, d=0, n=0, c=[]) => {
  * @returns {Array}          Array of coordinates.
  */
 PATHFINDER.getAdjacentCoordinates = (center, laws={}, force=false) => {
-    laws = [...laws];
+    laws = {...laws};
+    center = [...center];
 
     for (let d=0; d<center.length; d++) {
         if (laws.hasOwnProperty(d+1)) {
@@ -220,6 +221,7 @@ PATHFINDER.getAdjacents = (center, labyrinth, laws={}) => {
  * @returns {Number}          Value of the case.
  */
 PATHFINDER.getCase = (center, labyrinth) => {
+    labyrinth = [...labyrinth]
     for (let x of center) {
         labyrinth = labyrinth[x];
     }
@@ -328,7 +330,7 @@ PATHFINDER.appendPath = (paths, labyrinth, laws={}) => {
 
     for (let path of paths) {
         directions = PATHFINDER.getAdjacents(path[path.length-1], labyrinth, laws);
-        cases = PATHFINDER.getCases(directions,labyrinth);
+        cases = PATHFINDER.getCases(directions, labyrinth);
         if (cases.includes(PATHFINDER.END)) {
             path.push(directions[cases.indexOf(PATHFINDER.END)]);
             return [path, true];
