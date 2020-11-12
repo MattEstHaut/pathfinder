@@ -1,97 +1,105 @@
 # Pathfinder
-A simple path finding algorithm.
+N-dimensional pathfinder optimized algoritm module.
 
-### Test yourself
+- Supports temporal dimensions
+- Determines the shortest path
+- Supports multi-exit labyrinth
 
-You can access the application by clicking [here](https://mattesthaut.github.io/pathfinder) !
+## Test yourself
 
-### Python documentation
+You can access the demo [here](https://mattesthaut.github.io/pathfinder) !
+> This application uses an old version of pathfinder.js
 
-First, import the package :
+## Quick start
 
-```python
-import pathfinder
-```
+Learn how to use the library through a simple example: the resolution of a two-dimensional labyrinth.
 
-The labyrinth must be a two-dimensional array with distinct values for: paths, walls, departure and arrival. It will have to be converted into a labyrinth usable by **pathfinder.py** as follows :
+### Python3
 
-```python
-configuration = {"S": pathfinder.START, "E": pathfinder.END, " ": pathfinder.PATH, "#": pathfinder.WALL}
-labyrinth = pathfinder.convert(labyrinth, configuration)
-```
-
-Once this is done, you can calculate the shortest route to the end :
+First import the library like this :
 
 ```python
-solution = pathfinder.resolve(labyrinth)
+	import pathfinder
 ```
 
-You will get an array containing an ordered list of the coordinates of the shortest path. If there is no solution, the array will be zero length.
+The labyrinth must be represented as a two-dimensional array of int, where the type of each case is represented by a specific value :
 
-You can also solve a labyrinth contained in a file, labyrinth.lbrth is an example of a labyrinth stored in a file :
+- 0: path
+- 1: wall
+- 2: starting point (there can be only one starting point)
+- 3: exit (there can be several exits)
 
-```
-[SSEEP W#]
-#S########
-#      ###
-# ## #  ##
-# #  ## ##
-#   #   ##
-##### ####
-##       E
-## ## ####
-##    ####
-##########
-```
-
-The first line means: "The starting point is represented by 'S', the end point is represented by 'E', the paths are represented by ' ' and the walls by '#'". If for example you want to represent the start with a 'D', you must also change the 'S' (the second) of the first line to a 'D'. 
-To resolve this labyrinth use the following command in a terminal :
+Here is an example of a valid two-dimensional labyrinth :
 
 ```python
-python3 pathfinder.py [filename] -show
+labyrinth = [
+    [0, 0, 0, 1, 3],
+    [2, 1, 1, 1, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 1],
+    [0, 1, 0, 0, 3]
+]
+```
+> Note that the labyrinth has 2 exits.
+
+Now we can solve it like this :
+
+```python
+path = pathfinder.resolve(labyrinth)
+
+if path is None:
+    print("No solution")
+else:
+    print("Solved")
 ```
 
+Path is a list of tuple representing the coordinates of the points travelled from the starting point to the exit.
 
-### Javascript documentation
+```python
+print(path) # -> [(1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (4, 2), (4, 3), (4, 4)]
+```
 
-First, import the package :
+### Javascript
+
+First import the library like this :
 
 ```html
-<script type="text/javascript" src="pathfinder.js"></script>
+	<script src="pathfinder.js"></script>
 ```
+> Must be before the implementation of your code.
 
-The labyrinth must be a two-dimensional array with distinct values for: paths, walls, departure and arrival. It will have to be converted into a labyrinth usable by **pathfinder.js** as follows :
+The labyrinth must be represented as a two-dimensional array of int, where the type of each case is represented by a specific value :
+
+- 0: path
+- 1: wall
+- 2: starting point (there can be only one starting point)
+- 3: exit (there can be several exits)
+
+Here is an example of a valid two-dimensional labyrinth :
 
 ```javascript
-const configuration = {path: pathValue, wall: wallValue, start: startValue, end: endValue};
-labyrinth = PATHFINDER.convert(labyrinth, configuration);
+var labyrinth = [
+    [0, 0, 0, 1, 3],
+    [2, 1, 1, 1, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 1],
+    [0, 1, 0, 0, 3]
+];
 ```
+> Note that the labyrinth has 2 exits.
 
-Once this is done, you can calculate the shortest route to the end :
+Now we can solve it like this :
 
 ```javascript
-var solution = PATHFINDER.resolve(labyrinth);
+var path = PATHFINDER.resolve(labyrinth);
+
+if (!path) {
+    console.log("No solution")
+} else {
+	console.log("Solved")
+}
+
+// here path = [[1, 0], [2, 0], [3, 0], [3, 1], [3, 2], [4, 2], [4, 3], [4, 4]]
 ```
 
-You will get an array containing an ordered list of the coordinates of the shortest path. If there is no solution, the array will be zero length.
-
-You can export a labyrinth as a file:
-
-```javascript
-PATHFINDER.export(labyrinth);
-```
-> This file is readable for **pathfinder.py**
-
-You can import a labyrinth like this:
-
-```html
-<input type="file" id="reader" />
-```
-```javascript
-const reader = document.getElementById("reader");
-
-PATHFINDER.import(reader, (labyrinth) => {
-	//some code...
-})
-```
-> **pathfinder.js** can read the same type of file as **pathfinder.py**.
+Path is a bidimensional array representing the coordinates of the points travelled from the starting point to the exit.
