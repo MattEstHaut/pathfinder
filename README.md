@@ -198,14 +198,14 @@ labyrinth = [t0, t1, t2, t3, t4, t0, t1, t2, t3, t4] # We repeat the transformat
 
 laws = pathfinder.newLaw(1, pathfinder.JUMP_FORWARD)
 
-path = pathfinder.resolve(labyrinth, laws) # returns -> [(0, 1, 0), (1, 0, 0), (2, 0, 1), (3, 1, 1), (4, 1, 2), (5, 1, 3), (6, 1, 4)]
+path = pathfinder.resolve(labyrinth, laws) # returns -> [(0, 1, 0), (1, 0, 0), (2, 0, 0), (3, 0, 0), (4, 0, 1), (5, 1, 1), (6, 1, 2), (7, 1, 3), (8, 1, 4)]
 ```
 > Notice that each step of the path is represented by 3 coordinates because we have a three-dimensional labyrinth, the first coordinate is that of time.
 
 It solves our problem, but it's not a clean way. How many times must the sequence be repeated for a more complex maze ? We can't know until we solve it. But we can add the sequence as we solve the labyrinthe thanks to the callback parameter :
 
 ```python
-labyrinth = [t1, t2, t3, t4]
+labyrinth = [t0, t1, t2, t3, t4]
 laws = pathfinder.newLaw(1, pathfinder.JUMP_FORWARD)
 
 t = 0 # represents time
@@ -218,7 +218,7 @@ def ourCallback(args): # our callback function
     t += 1 # t is incremented by one unit
     return args
 
-path = pathfinder.resolve(labyrinth, laws, ourCallback) # returns -> [(0, 1, 0), (1, 0, 0), (2, 0, 1), (3, 1, 1), (4, 1, 2), (5, 1, 3), (6, 1, 4)]
+path = pathfinder.resolve(labyrinth, laws, ourCallback) # returns -> [(0, 1, 0), (1, 0, 0), (2, 0, 0), (3, 0, 0), (4, 0, 1), (5, 1, 1), (6, 1, 2), (7, 1, 3), (8, 1, 4)]
 ```
 
 So we have a cleaner way to solve the labyrinth. But let's detail the callback parameter :
@@ -339,7 +339,7 @@ var labyrinth = [t0, t1, t2, t3, t4, t0, t1, t2, t3, t4]; // We repeat the trans
 
 var laws = PATHFINDER.newLaw(1, pathfinder.JUMP_FORWARD);
 
-var path = PATHFINDER.resolve(labyrinth, laws); // returns -> [[0, 1, 0], [1, 0, 0], [2, 0, 1], [3, 1, 1], [4, 1, 2], [5, 1, 3], [6, 1, 4]]
+var path = PATHFINDER.resolve(labyrinth, laws); // returns -> [[0, 1, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 1], [5, 1, 1], [6, 1, 2], [7, 1, 3], [8, 1, 4]]
 ```
 > Notice that each step of the path is represented by 3 coordinates because we have a three-dimensional labyrinth, the first coordinate is that of time.
 
@@ -359,7 +359,7 @@ var ourCallback = (args) => { // our callback function
 	return args;
 }
 
-path = PATHFINDER.resolve(labyrinth, laws, ourCallback); // returns -> [[0, 1, 0], [1, 0, 0], [2, 0, 1], [3, 1, 1], [4, 1, 2], [5, 1, 3], [6, 1, 4]]
+path = PATHFINDER.resolve(labyrinth, laws, ourCallback); // returns -> [[0, 1, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 1], [5, 1, 1], [6, 1, 2], [7, 1, 3], [8, 1, 4]]
 ```
 
 So we have a cleaner way to solve the labyrinth. But let's detail the callback parameter :
