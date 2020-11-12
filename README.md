@@ -155,7 +155,7 @@ t4 = [
     [0, 0, 0, 0, 0]
 ]
 
-labyrinth = [t0, t1, t2, t3, t4] # labyrinth[t][x][y] where t is the unit of time
+labyrinth = [t0, t1, t2, t3, t4] # labyrinth[t][x][y]
 ```
 
 We have our three-dimensional labyrinth but we can't do :
@@ -297,7 +297,7 @@ const t4 = [
     [0, 0, 0, 0, 0]
 ];
 
-var labyrinth = [t0, t1, t2, t3, t4]; // labyrinth[t][x][y] where t is the unit of time
+var labyrinth = [t0, t1, t2, t3, t4]; // labyrinth[t][x][y]
 ```
 
 We have our three-dimensional labyrinth but we can't do :
