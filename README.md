@@ -155,7 +155,7 @@ t4 = [
     [0, 0, 0, 0, 0]
 ]
 
-labyrinth = [t1, t2, t3, t4] # labyrinth[t][x][y] where t is the unit of time
+labyrinth = [t0, t1, t2, t3, t4] # labyrinth[t][x][y] where t is the unit of time
 ```
 
 We have our three-dimensional labyrinth but we can't do :
@@ -194,7 +194,7 @@ No path will be found yet we see that the labyrinth is resolvable, why ? It is s
 We can solve this problem like this :
 
 ```python
-labyrinth = [t1, t2, t3, t4, t1, t2, t3, t4] # We repeat the transformation sequence once
+labyrinth = [t0, t1, t2, t3, t4, t0, t1, t2, t3, t4] # We repeat the transformation sequence once
 
 laws = pathfinder.newLaw(1, pathfinder.JUMP_FORWARD)
 
@@ -297,7 +297,7 @@ const t4 = [
     [0, 0, 0, 0, 0]
 ];
 
-var labyrinth = [t1, t2, t3, t4]; // labyrinth[t][x][y] where t is the unit of time
+var labyrinth = [t0, t1, t2, t3, t4]; // labyrinth[t][x][y] where t is the unit of time
 ```
 
 We have our three-dimensional labyrinth but we can't do :
@@ -335,7 +335,7 @@ No path will be found yet we see that the labyrinth is resolvable, why ? It is s
 We can solve this problem like this :
 
 ```javascript
-var labyrinth = [t1, t2, t3, t4, t1, t2, t3, t4]; // We repeat the transformation sequence once
+var labyrinth = [t0, t1, t2, t3, t4, t0, t1, t2, t3, t4]; // We repeat the transformation sequence once
 
 var laws = PATHFINDER.newLaw(1, pathfinder.JUMP_FORWARD);
 
@@ -346,7 +346,7 @@ var path = PATHFINDER.resolve(labyrinth, laws); // returns -> [[0, 1, 0], [1, 0,
 It solves our problem, but it's not a clean way. How many times must the sequence be repeated for a more complex maze ? We can't know until we solve it. But we can add the sequence as we solve the labyrinthe thanks to the callback parameter :
 
 ```javascript
-var labyrinth = [t1, t2, t3, t4];
+var labyrinth = [t0, t1, t2, t3, t4];
 var laws = PATHFINDER.newLaw(1, PATHFINDER.JUMP_FORWARD);
 
 t = 0 // represents time
