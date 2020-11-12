@@ -349,10 +349,10 @@ It solves our problem, but it's not a clean way. How many times must the sequenc
 var labyrinth = [t0, t1, t2, t3, t4];
 var laws = PATHFINDER.newLaw(1, PATHFINDER.JUMP_FORWARD);
 
-t = 0 // represents time
+var t = 0 // represents time
 
 var ourCallback = (args) => { // our callback function
-    if (t+1 == len(args["labyrinth"])) { // if we are at the last coordinate of dimension 1 (the time dimension)
+    if (t+1 == args["labyrinth"].length) { // if we are at the last coordinate of dimension 1 (the time dimension)
 		args["labyrinth"] = args["labyrinth"].concat(labyrinth); // then we add the sequence [t0, t1, t2, t3, t4] to the labyrinth
 	}
     t += 1; // t is incremented by one unit
@@ -366,18 +366,18 @@ So we have a cleaner way to solve the labyrinth. But let's detail the callback p
 
 ```javascript
 var ourCallback = (args) => {
-	for (let arg of args) {
+	for (let arg of Object.keys(args)) {
 		console.log(arg);
 	}
 }
 
 var path = PATHFINDER.resolve(labyrinth, laws, ourCallback);
 
-# output
-# -> "labyrinth"
-# -> "laws"
-# -> "paths"
-# ->  ...
+// output
+// -> "labyrinth"
+// -> "laws"
+// -> "paths"
+// ->  ...
 ```
 
 Our callaback function is called before each step of resolution of the labyrinth. It receives in parameter a Object with the following keys : 
