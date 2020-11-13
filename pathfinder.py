@@ -13,12 +13,12 @@
     Exemple :
     ---------
     >>> import pathfinder as pf
-    >>> labyrinth = [[0,0,0,0,0],[2,1,0,1,0],[0,1,0,0,0],[0,1,0,1,0],[0,1,3,1,0]]
-    >>> pf.resolve(labyrinth)
+    >>> maze = [[0,0,0,0,0],[2,1,0,1,0],[0,1,0,0,0],[0,1,0,1,0],[0,1,3,1,0]]
+    >>> pf.resolve(maze)
     [(1, 0), (0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2)]
 """
 
-# constantes : types de case du labyrinthe
+# constantes : types de case du mazee
 PATH     = 0
 WALL     = 1
 START    = 2 # un seul point de départ est autorisé
@@ -34,14 +34,14 @@ BACKWARD       = 4 # force l'incrémentation de la coordonnée (utile pour les d
 JUMP_BACKWARD  = 5 # force la décrémentation de la coordonnée (utile pour les dimensions temporelles)
 
 
-def getDimension(labyrinth: list) -> int:
+def getDimension(maze: list) -> int:
     """
         getDimension
         ============
 
         Description :
         -------------
-        Returns the number of dimension of labyrinth.
+        Returns the number of dimension of maze.
 
         Example :
         ---------
@@ -50,26 +50,26 @@ def getDimension(labyrinth: list) -> int:
 
         Parameters :
         ------------
-            labyrinth (list): n-dimensional array of int.
+            maze (list): n-dimensional array of int.
         
         Returns :
         ---------
             int: the number of dimension.
     """
 
-    if type(labyrinth) is list: # si labyrinth est de type list -> retourne 1 + le nombre de dimension de labyrinth[0]
-        return 1 + getDimension(labyrinth[0])
-    return 0 # si labyrinth n'est pas de type list -> retourne 0, le nombre de dimension d'un nombre
+    if type(maze) is list: # si maze est de type list -> retourne 1 + le nombre de dimension de maze[0]
+        return 1 + getDimension(maze[0])
+    return 0 # si maze n'est pas de type list -> retourne 0, le nombre de dimension d'un nombre
 
 
-def findStart(labyrinth: list, d=None, n=0, c=()) -> tuple:
+def findStart(maze: list, d=None, n=0, c=()) -> tuple:
     """
         findStart
         =========
 
         Description
         -----------
-        Returns the coordinates of the starting point of labyrinth.
+        Returns the coordinates of the starting point of maze.
 
         Exemple :
         ---------
@@ -78,7 +78,7 @@ def findStart(labyrinth: list, d=None, n=0, c=()) -> tuple:
 
         Parameters :
         ------------
-            labyrinth (list): n-dimensional array of int.
+            maze (list): n-dimensional array of int.
         
         Returns :
         ---------
@@ -86,18 +86,18 @@ def findStart(labyrinth: list, d=None, n=0, c=()) -> tuple:
     """
 
     # obtient le nombre de dimension
-    if d is None: d = getDimension(labyrinth)
+    if d is None: d = getDimension(maze)
 
     # parcourt toutes les coordonnées jusqu'à trouver le point de départ
 
     if n + 1 == d: # condition d'arrêt : on est à la dernière dimension
-        for i in range(len(labyrinth)):
-            if labyrinth[i] == START:
+        for i in range(len(maze)):
+            if maze[i] == START:
                 return c + (i,)
         return None
 
-    for i in range(len(labyrinth)):
-        j = findStart(labyrinth[i], d, n+1, c+(i,))
+    for i in range(len(maze)):
+        j = findStart(maze[i], d, n+1, c+(i,))
         if j is not None:
             return j
     
@@ -199,7 +199,7 @@ def isLegalCoordinate1D(x: int, l: int) -> bool:
     return (x >= 0 and x < l)
 
 
-def isLegalCoordinate(c: tuple, labyrinth: list) -> bool:
+def isLegalCoordinate(c: tuple, maze: list) -> bool:
     """
         isLegalCoordinate
         =================
@@ -220,21 +220,21 @@ def isLegalCoordinate(c: tuple, labyrinth: list) -> bool:
         Parameters :
         ------------
             c (tuple of int): coordinates.
-            labyrinth (list): n-dimensional array of int.
+            maze (list): n-dimensional array of int.
         
         Returns :
         ---------
-            bool: True if c is in labyrinth, else False.
+            bool: True if c is in maze, else False.
     """
 
     for d in c: # vérifie que toute les coordonnées sont dans légales leurs dimensions respectives
-        if not isLegalCoordinate1D(d, len(labyrinth)):
+        if not isLegalCoordinate1D(d, len(maze)):
             return False
-        labyrinth = labyrinth[d] # passe à la dimension suivante
+        maze = maze[d] # passe à la dimension suivante
     return True
 
 
-def getAdjacents(center: tuple, labyrinth: list, laws={}) -> list:
+def getAdjacents(center: tuple, maze: list, laws={}) -> list:
     """
         getAdjacents
         ============
@@ -253,7 +253,7 @@ def getAdjacents(center: tuple, labyrinth: list, laws={}) -> list:
         Parameters :
         ------------
             center (tuple of int):  coordinates.
-            labyrinth (list): n-dimensional array of int.
+            maze (list): n-dimensional array of int.
             laws (dict): see newLaw function for details.
         
         Returns :
@@ -264,19 +264,19 @@ def getAdjacents(center: tuple, labyrinth: list, laws={}) -> list:
     adjacentCoordinates = getAdjacentCoordinates(center, laws) # obtient les coordonnées adjacentes
     adjacents = []
     for c in adjacentCoordinates:
-        if isLegalCoordinate(c, labyrinth): # si les coordonnées sont légales -> les ajoute à adjacents
+        if isLegalCoordinate(c, maze): # si les coordonnées sont légales -> les ajoute à adjacents
             adjacents.append(c)
     return adjacents
 
 
-def getCase(center: tuple, labyrinth: list) -> int:
+def getCase(center: tuple, maze: list) -> int:
     """
         getCase
         =======
 
         Description :
         -------------
-        Returns the value of the case at center in labyrinth.
+        Returns the value of the case at center in maze.
 
         Exemple :
         ---------
@@ -286,26 +286,26 @@ def getCase(center: tuple, labyrinth: list) -> int:
         Parameters :
         ------------
             center (tuple of int): coordinates.
-            labyrinth (list): n-dimensional array of int.
+            maze (list): n-dimensional array of int.
         
         Returns :
         ---------
             int: value of the case.
     """
 
-    for x in center: # revient à faire labyrinth[center1][center2][center3] ... [centern-1][centern] avec n le nombre de dimension de center
-        labyrinth = labyrinth[x]
-    return labyrinth
+    for x in center: # revient à faire maze[center1][center2][center3] ... [centern-1][centern] avec n le nombre de dimension de center
+        maze = maze[x]
+    return maze
 
 
-def getCases(centers: list, labyrinth: list) -> list:
+def getCases(centers: list, maze: list) -> list:
     """"
         getCases
         ========
 
         Description:
         ------------
-        Returns all the values of the cases at center* in labyrinth.
+        Returns all the values of the cases at center* in maze.
 
         Exemple :
         ---------
@@ -315,14 +315,14 @@ def getCases(centers: list, labyrinth: list) -> list:
         Parameters :
         ------------
             centers (list of tuple of int): list of coordinates.
-            labyrinth (list): n-dimensional array of int.
+            maze (list): n-dimensional array of int.
         
         Returns :
         ---------
             list of int: values of the cases.
     """
     
-    return [getCase(d, labyrinth) for d in centers]
+    return [getCase(d, maze) for d in centers]
 
 
 def newLaw(d: int, law: int, laws={}) -> dict:
@@ -371,36 +371,36 @@ def newLaw(d: int, law: int, laws={}) -> dict:
     return laws
 
 
-def banCase(case: tuple, labyrinth: list) -> None:
+def banCase(case: tuple, maze: list) -> None:
     """
         banCase
         =======
 
         Description :
         -------------
-        Bans a case of coordinates case of labyrinth.
+        Bans a case of coordinates case of maze.
 
         Exemple :
         ---------
-        >>> labyrinth = [[0,1], [1,0]]
-        >>> banCase((1,0), labyrinth)
-        >>> labyrinth
+        >>> maze = [[0,1], [1,0]]
+        >>> banCase((1,0), maze)
+        >>> maze
         [[0,1], [4,0]]
 
         Parameters :
         ------------
             case (tuple of int): coordinates of case.
-            labyrinth (list): n-dimensional array of int.
+            maze (list): n-dimensional array of int.
     """
 
     if len(case) == 1:
-        labyrinth[case[0]] = BANNED
+        maze[case[0]] = BANNED
         return None
 
-    banCase(case[1:], labyrinth[case[0]])
-    # revient à faire labyrinth[case1][case2][case3] ... [casen-1][casen] = BANNED avec n le nombre de dimension de case
+    banCase(case[1:], maze[case[0]])
+    # revient à faire maze[case1][case2][case3] ... [casen-1][casen] = BANNED avec n le nombre de dimension de case
 
-def appendPath(paths: list, labyrinth: list, laws={}) -> (list, bool):
+def appendPath(paths: list, maze: list, laws={}) -> (list, bool):
     """
         appendPath
         ==========
@@ -416,7 +416,7 @@ def appendPath(paths: list, labyrinth: list, laws={}) -> (list, bool):
         Parameters :
         ------------
             paths (list of tuple of int): list of paths.
-            labyrinth (list): n-dimensional array of int.
+            maze (list): n-dimensional array of int.
             laws (dict): laws.
 
         Returns :
@@ -433,8 +433,8 @@ def appendPath(paths: list, labyrinth: list, laws={}) -> (list, bool):
 
     newPaths = [] # contiendra les nouveaux chemins et ceux mis à jour
     for path in paths:
-        directions = getAdjacents(path[-1], labyrinth, laws) # obtient les coordonnées des cases adjacentes suivant les lois
-        cases = getCases(directions, labyrinth) # obtient les valeurs des cases aux coordonnées de directions
+        directions = getAdjacents(path[-1], maze, laws) # obtient les coordonnées des cases adjacentes suivant les lois
+        cases = getCases(directions, maze) # obtient les valeurs des cases aux coordonnées de directions
         if END in cases: # si la fin a été trouvée -> retourne le chemin et True
             path.append(directions[cases.index(END)])
             return path, True
@@ -444,7 +444,7 @@ def appendPath(paths: list, labyrinth: list, laws={}) -> (list, bool):
                 newPaths.append(path.copy())
                 newPaths[-1].append(directions[d])
                 if not noBan: # si le bannissement des cases visitées n'est pas désactivé -> bannit la case
-                    banCase(directions[d], labyrinth)
+                    banCase(directions[d], maze)
 
     return newPaths, False # retourne les nouveaux chemins et False
 
@@ -458,24 +458,24 @@ def defaultCallback(arg: {}) -> None:
     return None
 
 
-def resolve(labyrinth: list, laws={}, callback=defaultCallback) -> list:
+def resolve(maze: list, laws={}, callback=defaultCallback) -> list:
     """
         resolve
         =======
 
         Description :
         -------------
-        Resolves n-dimensional labyrinth.
+        Resolves n-dimensional maze.
 
         Exemple :
         ---------
-        >>> labyrinth = [[2,1,3], [0,1,0], [0,0,0]]
-        >>> resolve(labyrinth)
+        >>> maze = [[2,1,3], [0,1,0], [0,0,0]]
+        >>> resolve(maze)
         [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (1, 2), (0, 2)]
 
-        Labyrinth parameter :
+        maze parameter :
         ---------------------
-        Labyrinth is n-dimensional array of int. \n
+        maze is n-dimensional array of int. \n
         
             PATH     = 0
             WALL     = 1
@@ -505,13 +505,13 @@ def resolve(labyrinth: list, laws={}, callback=defaultCallback) -> list:
         Callback parameter :
         --------------------
         The callback function is called at each step as well : \n
-        callback({"labyrinth": labyrinth, "laws": laws, "paths": paths}) \n
+        callback({"maze": maze, "laws": laws, "paths": paths}) \n
         paths is a list of possible correct routes (list of list of tuple of int) \n
-        If the return of callback is a dict with keys "labyrinth", "laws" or "paths" -> the value of the original variable will be modified.
+        If the return of callback is a dict with keys "maze", "laws" or "paths" -> the value of the original variable will be modified.
 
         Parameters :
         ------------
-            labyrinth (list): n-dimensional array of int.
+            maze (list): n-dimensional array of int.
             laws (dict): laws.
             callback (function): function that executes at each step.
 
@@ -520,16 +520,16 @@ def resolve(labyrinth: list, laws={}, callback=defaultCallback) -> list:
             list of tuple of int: path (if the end has not been reached -> return None)
     """
 
-    paths = [[findStart(labyrinth)]] # creer une list d'un seul chemin contenenant un seul tuple de coordonnées : celles du point de départ
+    paths = [[findStart(maze)]] # creer une list d'un seul chemin contenenant un seul tuple de coordonnées : celles du point de départ
     end = False
     while not end: # tant que la sortie n'a pas été trouvée ou que tout les chemins ont été visités
-        arg = callback({"labyrinth": labyrinth, "laws": laws, "paths": paths}) # appel de la fonction callback
-        if type(arg) is dict: # mise à jour potentiel de labyrinth, laws et paths
-            if "labyrinth" in arg: labyrinth = arg["labyrinth"]
+        arg = callback({"maze": maze, "laws": laws, "paths": paths}) # appel de la fonction callback
+        if type(arg) is dict: # mise à jour potentiel de maze, laws et paths
+            if "maze" in arg: maze = arg["maze"]
             if "laws" in arg: laws = arg["laws"]
             if "paths" in arg: paths = arg["paths"]
 
-        paths, end = appendPath(paths, labyrinth, laws) # met à jours paths
+        paths, end = appendPath(paths, maze, laws) # met à jours paths
         if len(paths) == 0: # si tout les chemins ont été visités et qu'il n'y pas de chemin qui mène à la sortie -> retourne None
             return None
 

@@ -31,14 +31,14 @@ PATHFINDER.JUMP_BACKWARD = 5;
  * 
  * Description :
  * -------------
- * Returns the number of dimension of labyrinth.
- * @param   {Array}  labyrinth N-dimensional array of int.
+ * Returns the number of dimension of maze.
+ * @param   {Array}  maze N-dimensional array of int.
  * @param   {Number} d    
  * @returns {Number}           The number of dimension.
  */
-PATHFINDER.getDimension = (labyrinth, d=0) => {
-    if (typeof(labyrinth) != "number") {
-        return 1 + PATHFINDER.getDimension(labyrinth[0], d);
+PATHFINDER.getDimension = (maze, d=0) => {
+    if (typeof(maze) != "number") {
+        return 1 + PATHFINDER.getDimension(maze[0], d);
     }
     return d;
 }
@@ -49,29 +49,29 @@ PATHFINDER.getDimension = (labyrinth, d=0) => {
  * 
  * Description :
  * -------------
- * Returns the coordinates of the starting point of labyrinth.
- * @param   {Array}  labyrinth N-dimensional array of int.
+ * Returns the coordinates of the starting point of maze.
+ * @param   {Array}  maze N-dimensional array of int.
  * @param   {Number} d 
  * @param   {Number} n 
  * @param   {Number} c
  * @returns {Array}            Coordinates of starting point.
  */
-PATHFINDER.findStart = (labyrinth, d=0, n=0, c=[]) => {
+PATHFINDER.findStart = (maze, d=0, n=0, c=[]) => {
     if (d==0) {
-        d = PATHFINDER.getDimension(labyrinth);
+        d = PATHFINDER.getDimension(maze);
     }
 
     if (n+1 == d) {
-        for (let i=0; i<labyrinth.length; i++) {
-            if (labyrinth[i] == PATHFINDER.START) {
+        for (let i=0; i<maze.length; i++) {
+            if (maze[i] == PATHFINDER.START) {
                 return c.concat([i]);
             }
         }
         return [];
     }
 
-    for (let i=0; i<labyrinth.length; i++) {
-        let j = PATHFINDER.findStart(labyrinth[i], d, n+1, c.concat([i]));
+    for (let i=0; i<maze.length; i++) {
+        let j = PATHFINDER.findStart(maze[i], d, n+1, c.concat([i]));
         if (j.length > 0) {
             return j;
         }
@@ -173,15 +173,15 @@ PATHFINDER.isLegalCoordinate1D = (x, l) => {
  * -------------
  * Returns true if c is a legal coordinate, else return false.
  * @param   {Array}   c         Coordinates.
- * @param   {Array}   labyrinth N-dimensional array of int.
+ * @param   {Array}   maze N-dimensional array of int.
  * @returns {boolean}           true if c is a legal coordinate, else false.
  */
-PATHFINDER.isLegalCoordinates = (c, labyrinth) => {
+PATHFINDER.isLegalCoordinates = (c, maze) => {
     for (let d of c) {
-        if (!PATHFINDER.isLegalCoordinate1D(d, labyrinth.length)) {
+        if (!PATHFINDER.isLegalCoordinate1D(d, maze.length)) {
             return false;
         }
-        labyrinth = labyrinth[d];
+        maze = maze[d];
     }
     return true;
 }
@@ -194,15 +194,15 @@ PATHFINDER.isLegalCoordinates = (c, labyrinth) => {
  * -------------
  * Returns all legal adjacent coordinates of a point.
  * @param   {Array}  center    Coordinates.
- * @param   {Array}  labyrinth N-dimensional array of int.
+ * @param   {Array}  maze N-dimensional array of int.
  * @param   {Object} laws      See documentation for details.
  * @returns {Array}            Array of coordinates.
  */
-PATHFINDER.getAdjacents = (center, labyrinth, laws={}) => {
+PATHFINDER.getAdjacents = (center, maze, laws={}) => {
     adjacentCoordinates = PATHFINDER.getAdjacentCoordinates(center, laws);
     adjacents = [];
     for (let c of adjacentCoordinates) {
-        if (PATHFINDER.isLegalCoordinates(c, labyrinth)) {
+        if (PATHFINDER.isLegalCoordinates(c, maze)) {
             adjacents.push(c);
         }
     }
@@ -215,17 +215,17 @@ PATHFINDER.getAdjacents = (center, labyrinth, laws={}) => {
  * 
  * Description :
  * -------------
- * Returns the value of the case at center in labyrinth.
+ * Returns the value of the case at center in maze.
  * @param   {Array} center    Coordinates.
- * @param   {Array} labyrinth N-dimensional array of int.
+ * @param   {Array} maze N-dimensional array of int.
  * @returns {Number}          Value of the case.
  */
-PATHFINDER.getCase = (center, labyrinth) => {
-    labyrinth = [...labyrinth]
+PATHFINDER.getCase = (center, maze) => {
+    maze = [...maze]
     for (let x of center) {
-        labyrinth = labyrinth[x];
+        maze = maze[x];
     }
-    return labyrinth;
+    return maze;
 }
 
 /**
@@ -234,15 +234,15 @@ PATHFINDER.getCase = (center, labyrinth) => {
  * 
  * Description :
  * -------------
- * Returns all the values of the cases at center* in labyrinth.
+ * Returns all the values of the cases at center* in maze.
  * @param   {Array} centers   Array of coordinates.
- * @param   {Array} labyrinth N-dimensional array of int.
+ * @param   {Array} maze N-dimensional array of int.
  * @returns {Array}           Values of the cases.
  */
-PATHFINDER.getCases = (centers, labyrinth) => {
+PATHFINDER.getCases = (centers, maze) => {
     let cases = [];
     for (let d of centers) {
-        cases.push(PATHFINDER.getCase(d, labyrinth));
+        cases.push(PATHFINDER.getCase(d, maze));
     }
     return cases;
 }
@@ -286,18 +286,18 @@ PATHFINDER.newLaw = (d, law, laws={}) => {
  * 
  * Description :
  * -------------
- * Bans a case of coordinates case of labyrinth.
+ * Bans a case of coordinates case of maze.
  * @param {Array} c         Coordinates of case.
- * @param {Array} labyrinth N-dimensional array of int.
+ * @param {Array} maze N-dimensional array of int.
  */
-PATHFINDER.banCase = (c, labyrinth) => {
+PATHFINDER.banCase = (c, maze) => {
     if (c.length == 1) {
-        labyrinth[c[0]] = PATHFINDER.BANNED;
+        maze[c[0]] = PATHFINDER.BANNED;
         return;
     }
     let ct = [...c];
     ct.shift();
-    PATHFINDER.banCase(ct, labyrinth[c[0]]);
+    PATHFINDER.banCase(ct, maze[c[0]]);
 }
 
 /**
@@ -315,11 +315,11 @@ PATHFINDER.banCase = (c, labyrinth) => {
  * Parameters :
  * ------------
  * @param   {Array} paths     Array of paths.
- * @param   {Array} labyrinth N-dimensional array of int.
+ * @param   {Array} maze N-dimensional array of int.
  * @param   {Object} laws     See newLaws function for details.
  * @returns {Array}           (path||paths, bool end?).
  */
-PATHFINDER.appendPath = (paths, labyrinth, laws={}) => {
+PATHFINDER.appendPath = (paths, maze, laws={}) => {
     let newPaths = [];
     let directions; let cases;
 
@@ -329,8 +329,8 @@ PATHFINDER.appendPath = (paths, labyrinth, laws={}) => {
     }
 
     for (let path of paths) {
-        directions = PATHFINDER.getAdjacents(path[path.length-1], labyrinth, laws);
-        cases = PATHFINDER.getCases(directions, labyrinth);
+        directions = PATHFINDER.getAdjacents(path[path.length-1], maze, laws);
+        cases = PATHFINDER.getCases(directions, maze);
         if (cases.includes(PATHFINDER.END)) {
             path.push(directions[cases.indexOf(PATHFINDER.END)]);
             return [path, true];
@@ -341,7 +341,7 @@ PATHFINDER.appendPath = (paths, labyrinth, laws={}) => {
                 newPaths.push([...path]);
                 newPaths[newPaths.length-1].push(directions[d]);
                 if (!noBan) {
-                    PATHFINDER.banCase(directions[d], labyrinth);
+                    PATHFINDER.banCase(directions[d], maze);
                 }
             }
         }
@@ -356,9 +356,9 @@ PATHFINDER.appendPath = (paths, labyrinth, laws={}) => {
  * 
  * Description :
  * -------------
- * resolves n-dimensional labyrinth.
+ * resolves n-dimensional maze.
  * 
- * Labyrinth is n-dimensional array of int.
+ * Maze is n-dimensional array of int.
  * - PATH     = 0
  * - WALL     = 1
  * - START    = 2
@@ -383,27 +383,27 @@ PATHFINDER.appendPath = (paths, labyrinth, laws={}) => {
  * 
  * WARNING : PATHFINDER.newLaw("NO_BAN", true) significantly increases temporal complexity.
  * 
- * The callback function is called at each step as well : callback({"labyrinth": labyrinth, "laws": laws, "paths": paths});
+ * The callback function is called at each step as well : callback({"maze": maze, "laws": laws, "paths": paths});
  * 
  * paths is a list of possible correct routes.
- * If the return of callback is a dict with keys "labyrinth", "laws" or "paths" -> the value of the original variable will be modified.
+ * If the return of callback is a dict with keys "maze", "laws" or "paths" -> the value of the original variable will be modified.
  * 
  * Parameters :
  * ------------
- * @param   {Array} labyrinth    N-dimensional array of int.
+ * @param   {Array} maze    N-dimensional array of int.
  * @param   {Object} laws        Laws (see newLaws function for details).
  * @param   {Function} callback  Function that executes at each step.
  * @returns {Array}              Path (if the end has not been reached -> return false).
  */
-PATHFINDER.resolve = (labyrinth, laws={}, callback=()=>{}) => {
-    let paths = [[PATHFINDER.findStart(labyrinth)]];
+PATHFINDER.resolve = (maze, laws={}, callback=()=>{}) => {
+    let paths = [[PATHFINDER.findStart(maze)]];
     let end = false;
     let arg; let np1;
     while (!end) {
-        arg = callback({"labyrinth": labyrinth, "laws": laws, "paths": paths});
+        arg = callback({"maze": maze, "laws": laws, "paths": paths});
         if (typeof(arg) == "object") {
-            if (Object.keys(arg).includes("labyrinth")) {
-                labyrinth = arg["labyrinth"];
+            if (Object.keys(arg).includes("maze")) {
+                maze = arg["maze"];
             }
             if (Object.keys(arg).includes("laws")) {
                 laws = arg["laws"];
@@ -413,7 +413,7 @@ PATHFINDER.resolve = (labyrinth, laws={}, callback=()=>{}) => {
             }
         }
 
-        np1 = PATHFINDER.appendPath(paths, labyrinth, laws);
+        np1 = PATHFINDER.appendPath(paths, maze, laws);
         end = np1[1];
         paths = np1[0];
         if (paths.length == 0) {
@@ -603,7 +603,7 @@ PATHFINDER.export = (narray, name, laws={}) => {
  * @param {Object}   input    HTML input.
  * @param {Function} callback Callback.
  */
-PATHFINDER.import = (input, callback=(labyrinth, laws) => {}) => {
+PATHFINDER.import = (input, callback=(maze, laws) => {}) => {
     input.addEventListener("change", (evt) => {
 		let file = input.files[0];
 		let reader = new FileReader();
