@@ -397,7 +397,7 @@ We can also save our maze in a file and reload it from the same :
 ```javascript
 var reader = document.getElementById("reader");
 
-PATHFINDER.export(maze, "nameOfFile.extesnion");
+PATHFINDER.export(maze, "nameOfFile.extension");
 PATHFINDER.import(reader, (maze, laws) => {
 	//some code
 })
