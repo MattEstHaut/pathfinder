@@ -111,7 +111,7 @@ PATHFINDER.getAdjacentCoordinates = (center, laws={}, force=false) => {
         }
     }
 
-    let l = []; let i; let s; let ci; let cs;
+    let l = [], i, s, ci, cs;
     if (!force) {
         l.push(center);
     }
@@ -321,7 +321,7 @@ PATHFINDER.banCase = (c, maze) => {
  */
 PATHFINDER.appendPath = (paths, maze, laws={}) => {
     let newPaths = [];
-    let directions; let cases;
+    let directions, cases;
 
     let noBan = false;
     if (laws.hasOwnProperty("NO_BAN")) {
@@ -398,7 +398,7 @@ PATHFINDER.appendPath = (paths, maze, laws={}) => {
 PATHFINDER.resolve = (maze, laws={}, callback=()=>{}) => {
     let paths = [[PATHFINDER.findStart(maze)]];
     let end = false;
-    let arg; let np1;
+    let arg, np1;
     while (!end) {
         arg = callback({"maze": maze, "laws": laws, "paths": paths});
         if (typeof(arg) == "object") {
@@ -478,7 +478,7 @@ PATHFINDER.narrayUnflatten = (array, shape) => {
         return array;
     }
     let s = array.length/shape[0]
-    let narray = []; let subarray;
+    let narray = [], subarray;
     let mshape;
     for (let i=0; i<array.length; i+=s) {
         subarray = [];
@@ -506,9 +506,7 @@ PATHFINDER.narrayUnflatten = (array, shape) => {
 PATHFINDER.narray2str = (narray, laws={}) => {
     let shape = PATHFINDER.narrayShape(narray);
     let array = PATHFINDER.narrayFlatten(narray);
-    let ss = "";
-    let sl = "";
-    let sa = "";
+    let ss = "", sl = "", sa = "";
     for (let d of shape) {
         ss += String(d) + ":";
     }
@@ -543,7 +541,7 @@ PATHFINDER.narray2str = (narray, laws={}) => {
  */
 PATHFINDER.str2narray = (data) => {
     data = data.split("\n");
-    let shape = []; let laws = []; let array = [];
+    let shape = [], laws = [], array = [];
     let tmp_data = data[0].split(":");
     tmp_data.pop();
     for (let x of tmp_data) {
